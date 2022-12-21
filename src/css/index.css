@@ -1,0 +1,18 @@
+* {
+  box-sizing: border-box;
+}
+
+.btn_hidden {
+  display: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+.info {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
