@@ -8,6 +8,7 @@ export default class FetchData {
     this.searchQuery = '';
     this.perPage = 40;
     this.page = 1;
+    this.totalHits;
   }
 
   async fetchPhoto() {
@@ -21,8 +22,10 @@ export default class FetchData {
       per_page: this.perPage,
     });
     const url = `${BASE_URL}/?${params}`;
+    const res = await axios.get(url);
+    this.totalHits = res.data.totalHits;
     this.incrementPage();
-    return await axios.get(url);
+    return res;
   }
   incrementPage() {
     this.page += 1;

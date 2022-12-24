@@ -21,6 +21,7 @@ function simpleLightBox() {
 }
 
 form.addEventListener('submit', onSearchPhoto);
+scrollUpBtn.addEventListener('click', onLoadMore);
 
 async function onSearchPhoto(event) {
   event.preventDefault();
@@ -35,32 +36,7 @@ async function onSearchPhoto(event) {
   }
   inputRequest.resetPage();
   inputRequest.searchQuery = searchQuery;
-  await inputRequest.fetchPhoto().then(renderEvents).catch(onError);
-
-  // try {
-  //   if (inputRequest.searchQuery === '') {
-  //     clearList();
-  //     Notify.failure('Please enter your search data.');
-  //   } else {
-  //     const response = await inputRequest.fetchPhoto();
-  //     const {
-  //       data: { hits, totalHits },
-  //     } = response;
-  //     if (hits.length === 0) {
-  //       Notify.failure(
-  //         'Sorry, there are no images matching your search query. Please try again.'
-  //       );
-  //     } else {
-  //       Notify.success(`Hooray! We found ${totalHits} images.`);
-  //       renderEvents(hits);
-  //     }
-  //   }
-  // } catch (error) {
-  //   Notify.failure(
-  //     "We're sorry, but you've reached the end of search results."
-  //   );
-  //   console.log(error.message);
-  // }
+  await inputRequest.fetchPhoto().then(onLoadPhotos).catch(onError);
 }
 
 function onError(error) {
@@ -72,10 +48,34 @@ function onError(error) {
     Notify.failure(
       'Sorry, the request was made, but no response was received. Try again'
     );
-  } else {
-    Notify.failure('Something happened. Try again');
-    // console.log('я тут');
   }
+}
+
+function onLoadPhotos(response) {
+  let totalHits = response.data.totalHits;
+
+  if (totalHits === 0) {
+    Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again'
+    );
+    return;
+  }
+
+  if (totalHits !== 0) {
+    Notify.success(`Hooray! We found ${totalHits} images`);
+  }
+
+  let photos = response.data.hits;
+  renderEvents(photos);
+  simpleLightBox.refresh();
+}
+
+async function onLoadMore() {
+  if (inputRequest.totalHits < inputRequest.perPage) {
+    reachedEndSearch();
+    return;
+  }
+  await inputRequest.fetchPhoto().then(onLoadPhotos).catch(onError);
 }
 
 function renderEvents(events) {
@@ -91,28 +91,34 @@ function renderEvents(events) {
         downloads,
       }) => {
         return `  <div class="photo-card">
-         <a href="${largeImageURL}">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" />
-  <div class="info">
-    <p class="info-item">
-      <b>Likes ${likes}</b>
-    </p>
-    <p class="info-item">
-      <b>Views ${views}</b>
-    </p>
-    <p class="info-item">
-      <b>Comments ${comments}</b>
-    </p>
-    <p class="info-item">
-      <b>Downloads ${downloads}</b>
-    </p>
-  </div>
-</div>
-  `;
+                <a href="${largeImageURL}">
+                <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+                <div class="info">
+                  <p class="info-item">
+                    <b>Likes ${likes}</b>
+                  </p>
+                  <p class="info-item">
+                    <b>Views ${views}</b>
+                  </p>
+                  <p class="info-item">
+                    <b>Comments ${comments}</b>
+                  </p>
+                  <p class="info-item">
+                    <b>Downloads ${downloads}</b>
+                  </p>
+                </div>
+              </div>
+                `;
       }
     )
     .join('');
 
   gallery.insertAdjacentHTML('beforeend', markup);
   simpleLightBox();
+}
+
+function reachedEndSearch() {
+  Notify.warning(
+    `We're sorry, but you've reached the end of search "${inputRequest.searchQuery.toUpperCase()}". Please start a new search`
+  );
 }
