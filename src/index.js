@@ -1,65 +1,80 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+import FetchData from './js/fetchImage';
 
-// const { all } = require('axios');
+const inputRequest = new FetchData();
+const form = document.querySelector('.search-form');
+// const btnMore = document.querySelector('.load-more');
+const gallery = document.querySelector('.gallery');
 
-const refs = {
-  form: document.querySelector('.search-form'),
-  btnMore: document.querySelector('.load-more'),
-  gallery: document.querySelector('.gallery'),
-};
-
-const API_KEY = '32132732-163b27f3205d6aad07e142ebf';
-const BASE_URL = 'https://pixabay.com/api/';
-
-let page = 1;
-let elements = '';
-
-function fetchEvents(page, keyword) {
-  const params = new URLSearchParams({
-    key: API_KEY,
-    q: keyword,
-    image_type: 'photo',
-    orientation: 'horizontal',
-    safesearch: true,
-    page,
-    per_page: 40,
+function simpleLightBox() {
+  let lightbox = new SimpleLightbox('.gallery a', {
+    captions: false,
+    captionDelay: 250,
+    scrollZoom: false,
+    enableKeyboard: true,
+    doubleTapZoom: 5,
   });
-  return fetch(`${BASE_URL}?${params}`)
-    .then(response => {
-      if (response.status !== 200) {
-        throw new Error(response.status);
-      }
-      return response.json();
-    })
-    .catch(error => {
-      console.log(error);
-    });
+  lightbox.refresh();
 }
 
-function getEvents(page, keyWord) {
-  fetchEvents(page, keyWord).then(result => {
-    console.log('res:', result);
-    if (result.total === 0) {
-      refs.btnMore.classList.add('is-hidden');
-      Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
-      return;
-    }
-    if (page === result.totalHits) {
-      refs.btnMore.classList.add('is-hidden');
-      Notify.warning(
-        "We're sorry, but you've reached the end of search results."
-      );
-      return;
-    }
+form.addEventListener('submit', onSearchPhoto);
 
-    const images = result.hits;
-    renderEvents(images);
-    if (result.totalHits > 1) {
-      refs.btnMore.classList.remove('is-hidden');
-    }
-  });
+async function onSearchPhoto(event) {
+  event.preventDefault();
+  gallery.innerHTML = '';
+
+  const searchQuery = event.currentTarget.searchQuery.value;
+  if (!searchQuery || searchQuery.length < 3) {
+    Notify.warning(
+      'Warning! Search must not be empty and includes more then 2 letters'
+    );
+    return;
+  }
+  inputRequest.resetPage();
+  inputRequest.searchQuery = searchQuery;
+  await inputRequest.fetchPhoto().then(onSearchPhoto).catch(onError);
+
+  //   try {
+  //     if (inputRequest.searchQuery === '') {
+  //       clearList();
+  //       Notify.failure('Please enter your search data.');
+  //     } else {
+  //       const response = await inputRequest.fetchPhoto();
+  //       const {
+  //         data: { hits, totalHits },
+  //       } = response;
+  //       if (hits.length === 0) {
+  //         Notify.failure(
+  //           'Sorry, there are no images matching your search query. Please try again.'
+  //         );
+  //       } else {
+  //         Notify.success(`Hooray! We found ${totalHits} images.`);
+  //         renderEvents(hits);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     Notify.failure(
+  //       "We're sorry, but you've reached the end of search results."
+  //     );
+  //     console.log(error.message);
+  //   }
+}
+
+function onError(error) {
+  if (error.response) {
+    Notify.failure(
+      `Sorry, an error occurred - ${error.response.status}. Try again`
+    );
+  } else if (error.request) {
+    Notify.failure(
+      'Sorry, the request was made, but no response was received. Try again'
+    );
+  } else {
+    Notify.failure('Something happened. Try again');
+    // console.log('я тут');
+  }
 }
 
 function renderEvents(events) {
@@ -75,6 +90,7 @@ function renderEvents(events) {
         downloads,
       }) => {
         return `  <div class="photo-card">
+         <a href="${largeImageURL}">
   <img src="${webformatURL}" alt="${tags}" loading="lazy" />
   <div class="info">
     <p class="info-item">
@@ -84,7 +100,7 @@ function renderEvents(events) {
       <b>Views ${views}</b>
     </p>
     <p class="info-item">
-      <b>Comment s${comments}</b>
+      <b>Comments ${comments}</b>
     </p>
     <p class="info-item">
       <b>Downloads ${downloads}</b>
@@ -96,18 +112,6 @@ function renderEvents(events) {
     )
     .join('');
 
-  refs.gallery.insertAdjacentHTML('beforeend', markup);
+  gallery.insertAdjacentHTML('beforeend', markup);
+  simpleLightBox();
 }
-
-refs.form.addEventListener('submit', event => {
-  event.preventDefault();
-  const elements = event.currentTarget.searchQuery.value;
-  page = 1;
-  refs.gallery.innerHTML = '';
-  getEvents(page, elements);
-});
-
-refs.btnMore.addEventListener('click', () => {
-  page += 1;
-  getEvents(page, elements);
-});
