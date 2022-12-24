@@ -5,9 +5,14 @@ import FetchData from './js/fetchImage';
 
 const inputRequest = new FetchData();
 const form = document.querySelector('.search-form');
-// const btnMore = document.querySelector('.load-more');
+const btnMore = document.querySelector('.load-more');
 const gallery = document.querySelector('.gallery');
+const footer = document.querySelector('.footer');
 const scrollUpBtn = document.getElementById('scrollUp');
+const onTopButton = document.querySelector('.up_button');
+
+window.addEventListener('scroll', onScroll);
+onTopButton.addEventListener('click', onTop);
 
 function simpleLightBox() {
   let lightbox = new SimpleLightbox('.gallery a', {
@@ -21,7 +26,7 @@ function simpleLightBox() {
 }
 
 form.addEventListener('submit', onSearchPhoto);
-scrollUpBtn.addEventListener('click', onLoadMore);
+btnMore.addEventListener('click', onLoadMore);
 
 async function onSearchPhoto(event) {
   event.preventDefault();
@@ -75,6 +80,7 @@ async function onLoadMore() {
     reachedEndSearch();
     return;
   }
+
   await inputRequest.fetchPhoto().then(onLoadPhotos).catch(onError);
 }
 
@@ -92,7 +98,7 @@ function renderEvents(events) {
       }) => {
         return `  <div class="photo-card">
                 <a href="${largeImageURL}">
-                <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+                <img src="${webformatURL}" alt="${tags}" class="gallery-image" loading="lazy" />
                 <div class="info">
                   <p class="info-item">
                     <b>Likes ${likes}</b>
@@ -114,6 +120,9 @@ function renderEvents(events) {
     .join('');
 
   gallery.insertAdjacentHTML('beforeend', markup);
+  btnMore.classList.remove('visually-hidden');
+  footer.classList.remove('is-hidden');
+
   simpleLightBox();
 }
 
@@ -121,4 +130,22 @@ function reachedEndSearch() {
   Notify.warning(
     `We're sorry, but you've reached the end of search "${inputRequest.searchQuery.toUpperCase()}". Please start a new search`
   );
+}
+
+function onScroll() {
+  const scrolled = window.pageYOffset;
+  const coords = document.documentElement.clientHeight;
+
+  if (scrolled > coords) {
+    onTopButton.classList.remove('visually-hidden');
+  }
+  if (scrolled < coords) {
+    onTopButton.classList.add('visually-hidden');
+  }
+}
+
+function onTop() {
+  if (window.pageYOffset > 0) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
