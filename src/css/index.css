@@ -51,11 +51,11 @@ img {
   margin-bottom: 10px;
 }
 
-.container {
+/* .container {
   margin: 0 auto;
   padding-left: 50px;
   padding-right: 50px;
-}
+} */
 .search-form {
   display: flex;
   justify-content: center;
@@ -112,7 +112,8 @@ input {
 
 .photo-card {
   display: flex;
-  flex-basis: calc((100% - 30px) / 4);
+  max-width: 320px;
+  flex-basis: calc((100% - 10px) / 4);
   flex-direction: column;
   border-bottom-left-radius: 6px;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12), 0px 4px 4px rgba(0, 0, 0, 0.06),
@@ -130,11 +131,11 @@ input {
   display: flex;
   justify-content: center;
   background-color: var(--white-color);
-  gap: 10px;
+  gap: 5px;
   text-align: center;
   color: var(--fon-accent);
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .load-more {
@@ -165,6 +166,7 @@ input {
   border-radius: 10px;
   font-size: 20px;
   background-color: var(--white-color);
+  color: var(--fon-accent);
   box-shadow: 2px 1px 2px rgb(52, 60, 62);
   transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1),
     scale 250ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -198,6 +200,7 @@ input {
   align-items: center;
   line-height: calc(22 / 18);
   transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
 }
 
 .is-hidden {
@@ -229,9 +232,13 @@ input {
 }
 
 .wrapper-box {
-  margin-top: 20px;
+  /* margin-top: 20px; */
   padding-top: 60px;
   padding-bottom: 60px;
+  /* width: 1600px; */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
 }
 
 .footer {
