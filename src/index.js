@@ -7,6 +7,7 @@ const inputRequest = new FetchData();
 const form = document.querySelector('.search-form');
 // const btnMore = document.querySelector('.load-more');
 const gallery = document.querySelector('.gallery');
+const scrollUpBtn = document.getElementById('scrollUp');
 
 function simpleLightBox() {
   let lightbox = new SimpleLightbox('.gallery a', {
@@ -34,32 +35,32 @@ async function onSearchPhoto(event) {
   }
   inputRequest.resetPage();
   inputRequest.searchQuery = searchQuery;
-  await inputRequest.fetchPhoto().then(onSearchPhoto).catch(onError);
+  await inputRequest.fetchPhoto().then(renderEvents).catch(onError);
 
-  //   try {
-  //     if (inputRequest.searchQuery === '') {
-  //       clearList();
-  //       Notify.failure('Please enter your search data.');
+  // try {
+  //   if (inputRequest.searchQuery === '') {
+  //     clearList();
+  //     Notify.failure('Please enter your search data.');
+  //   } else {
+  //     const response = await inputRequest.fetchPhoto();
+  //     const {
+  //       data: { hits, totalHits },
+  //     } = response;
+  //     if (hits.length === 0) {
+  //       Notify.failure(
+  //         'Sorry, there are no images matching your search query. Please try again.'
+  //       );
   //     } else {
-  //       const response = await inputRequest.fetchPhoto();
-  //       const {
-  //         data: { hits, totalHits },
-  //       } = response;
-  //       if (hits.length === 0) {
-  //         Notify.failure(
-  //           'Sorry, there are no images matching your search query. Please try again.'
-  //         );
-  //       } else {
-  //         Notify.success(`Hooray! We found ${totalHits} images.`);
-  //         renderEvents(hits);
-  //       }
+  //       Notify.success(`Hooray! We found ${totalHits} images.`);
+  //       renderEvents(hits);
   //     }
-  //   } catch (error) {
-  //     Notify.failure(
-  //       "We're sorry, but you've reached the end of search results."
-  //     );
-  //     console.log(error.message);
   //   }
+  // } catch (error) {
+  //   Notify.failure(
+  //     "We're sorry, but you've reached the end of search results."
+  //   );
+  //   console.log(error.message);
+  // }
 }
 
 function onError(error) {
