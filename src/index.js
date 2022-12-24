@@ -4,7 +4,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const refs = {
   form: document.querySelector('.search-form'),
-  btnMore: document.querySelector('.more'),
+  btnMore: document.querySelector('.load-more'),
   gallery: document.querySelector('.gallery'),
 };
 
@@ -40,14 +40,14 @@ function getEvents(page, keyWord) {
   fetchEvents(page, keyWord).then(result => {
     console.log('res:', result);
     if (result.total === 0) {
-      refs.btnMore.classList.add('btn_hidden');
+      refs.btnMore.classList.add('is-hidden');
       Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
       return;
     }
     if (page === result.totalHits) {
-      refs.btnMore.classList.add('btn_hidden');
+      refs.btnMore.classList.add('is-hidden');
       Notify.warning(
         "We're sorry, but you've reached the end of search results."
       );
@@ -57,7 +57,7 @@ function getEvents(page, keyWord) {
     const images = result.hits;
     renderEvents(images);
     if (result.totalHits > 1) {
-      refs.btnMore.classList.remove('btn_hidden');
+      refs.btnMore.classList.remove('is-hidden');
     }
   });
 }
