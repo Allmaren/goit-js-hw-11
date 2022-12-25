@@ -2,17 +2,18 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import FetchData from './js/fetchImage';
+import { onTop } from './js/buttonUp';
 
 const inputRequest = new FetchData();
 const form = document.querySelector('.search-form');
 const btnMore = document.querySelector('.load-more');
 const gallery = document.querySelector('.gallery');
 const footer = document.querySelector('.footer');
-const scrollUpBtn = document.getElementById('scrollUp');
 const onTopButton = document.querySelector('.up_button');
 
-window.addEventListener('scroll', onScroll);
-onTopButton.addEventListener('click', onTop);
+form.addEventListener('submit', onSearchPhoto);
+btnMore.addEventListener('click', onLoadMore);
+onTopButton.addEventListener('click', onTop());
 
 function simpleLightBox() {
   let lightbox = new SimpleLightbox('.gallery a', {
@@ -24,10 +25,7 @@ function simpleLightBox() {
   });
   lightbox.refresh();
 }
-
-form.addEventListener('submit', onSearchPhoto);
-btnMore.addEventListener('click', onLoadMore);
-
+/*fetch*/
 async function onSearchPhoto(event) {
   event.preventDefault();
   gallery.innerHTML = '';
@@ -44,6 +42,7 @@ async function onSearchPhoto(event) {
   await inputRequest.fetchPhoto().then(onLoadPhotos).catch(onError);
 }
 
+/*error handlers*/
 function onError(error) {
   if (error.response) {
     Notify.failure(
@@ -56,6 +55,13 @@ function onError(error) {
     );
     btnMore.classList.add('visually-hidden');
   }
+}
+
+function reachedEndSearch() {
+  Notify.warning(
+    `We're sorry, but you've reached the end of search "${inputRequest.searchQuery.toUpperCase()}". Please start a new search`
+  );
+  btnMore.classList.add('visually-hidden');
 }
 
 function onLoadPhotos(response) {
@@ -78,15 +84,7 @@ function onLoadPhotos(response) {
   simpleLightBox.refresh();
 }
 
-async function onLoadMore() {
-  if (inputRequest.totalHits < inputRequest.perPage) {
-    reachedEndSearch();
-    return;
-  }
-
-  await inputRequest.fetchPhoto().then(onLoadPhotos).catch(onError);
-}
-
+/*render*/
 function renderEvents(events) {
   const markup = events
     .map(
@@ -129,27 +127,12 @@ function renderEvents(events) {
   simpleLightBox();
 }
 
-function reachedEndSearch() {
-  Notify.warning(
-    `We're sorry, but you've reached the end of search "${inputRequest.searchQuery.toUpperCase()}". Please start a new search`
-  );
-  btnMore.classList.add('visually-hidden');
-}
-
-function onScroll() {
-  const scrolled = window.pageYOffset;
-  const coords = document.documentElement.clientHeight;
-
-  if (scrolled > coords) {
-    onTopButton.classList.remove('visually-hidden');
+/*morePhotos*/
+async function onLoadMore() {
+  if (inputRequest.totalHits < inputRequest.perPage) {
+    reachedEndSearch();
+    return;
   }
-  if (scrolled < coords) {
-    onTopButton.classList.add('visually-hidden');
-  }
-}
 
-function onTop() {
-  if (window.pageYOffset > 0) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  await inputRequest.fetchPhoto().then(onLoadPhotos).catch(onError);
 }
