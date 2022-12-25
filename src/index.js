@@ -49,10 +49,12 @@ function onError(error) {
     Notify.failure(
       `Sorry, an error occurred - ${error.response.status}. Try again`
     );
+    footer.classList.add('is-hidden');
   } else if (error.request) {
     Notify.failure(
       'Sorry, the request was made, but no response was received. Try again'
     );
+    footer.classList.add('is-hidden');
   }
 }
 
@@ -63,6 +65,7 @@ function onLoadPhotos(response) {
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again'
     );
+    footer.classList.add('is-hidden');
     return;
   }
 
@@ -130,6 +133,7 @@ function reachedEndSearch() {
   Notify.warning(
     `We're sorry, but you've reached the end of search "${inputRequest.searchQuery.toUpperCase()}". Please start a new search`
   );
+  footer.classList.add('is-hidden');
 }
 
 function onScroll() {
