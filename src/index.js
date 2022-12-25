@@ -54,7 +54,7 @@ function onError(error) {
     Notify.failure(
       'Sorry, the request was made, but no response was received. Try again'
     );
-    footer.classList.add('is-hidden');
+    btnMore.classList.add('visually-hidden');
   }
 }
 
@@ -65,11 +65,11 @@ function onLoadPhotos(response) {
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again'
     );
-    footer.classList.add('is-hidden');
+    btnMore.classList.add('visually-hidden');
     return;
   }
 
-  if (totalHits !== 0) {
+  if (totalHits !== 0 && totalHits > 40) {
     Notify.success(`Hooray! We found ${totalHits} images`);
   }
 
@@ -133,7 +133,7 @@ function reachedEndSearch() {
   Notify.warning(
     `We're sorry, but you've reached the end of search "${inputRequest.searchQuery.toUpperCase()}". Please start a new search`
   );
-  footer.classList.add('is-hidden');
+  btnMore.classList.add('visually-hidden');
 }
 
 function onScroll() {

@@ -243,15 +243,16 @@ input {
 .footer {
   width: 100%;
   background: var(--gradient-color);
-  /* margin-bottom: 15px; */
+  margin-bottom: 15px;
   padding: 0;
-  position: fixed;
-  margin-left: auto;
-  margin-right: auto;
-  bottom: 1vh;
-  /* right: 2vw;
+  position: static;
+  bottom: 3vh;
+  right: 2vw;
+  /* margin-left: auto;
+  margin-right: auto; */
+
   width: 100%;
-  height: 95px; */
+  height: 95px;
   padding: 0;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
