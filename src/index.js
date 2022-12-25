@@ -67,6 +67,10 @@ function reachedEndSearch() {
 function onLoadPhotos(response) {
   let totalHits = response.data.totalHits;
 
+  if (totalHits < 40) {
+    console.log(totalHits);
+    btnMore.classList.add('visually-hidden');
+  }
   if (totalHits === 0) {
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again'
@@ -77,6 +81,7 @@ function onLoadPhotos(response) {
 
   if (totalHits !== 0 && totalHits > 40) {
     Notify.success(`Hooray! We found ${totalHits} images`);
+    btnMore.classList.remove('visually-hidden');
   }
 
   let photos = response.data.hits;
@@ -121,7 +126,6 @@ function renderEvents(events) {
     .join('');
 
   gallery.insertAdjacentHTML('beforeend', markup);
-  btnMore.classList.remove('visually-hidden');
   footer.classList.remove('is-hidden');
 
   simpleLightBox();
