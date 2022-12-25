@@ -13,7 +13,7 @@ const onTopButton = document.querySelector('.up_button');
 
 form.addEventListener('submit', onSearchPhoto);
 btnMore.addEventListener('click', onLoadMore);
-// onTopButton.addEventListener('click', onTop());
+onTopButton.addEventListener('click', onTop());
 
 function simpleLightBox() {
   let lightbox = new SimpleLightbox('.gallery a', {
